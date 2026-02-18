@@ -21,3 +21,9 @@ A generic "Thin Client" Solana wallet analyzer and swap interface, built with Re
 - **Language:** TypeScript
 - **Navigation:** Expo Router
 - **State:** Zustand
+
+## ✨ Features
+
+- **Phase 1: Foundation (Current)**
+  - 軽量 `useSolanaRpc` hook for JSON-RPC calls.
+  - Home Screen: Check SOL Balance by address.
