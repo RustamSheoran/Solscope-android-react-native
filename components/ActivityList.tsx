@@ -1,6 +1,8 @@
 import React, { memo } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { GlassCard } from "./design-system/GlassCard";
+import { SkeletonLoader } from "./design-system/SkeletonLoader";
 
 export interface Transaction {
   signature: string;
@@ -26,7 +28,6 @@ const TransactionItem = memo(({ item }: { item: Transaction }) => {
     }) : "Unknown Date";
     
     const isError = item.err !== null;
-    const isSuccess = !isError && (item.confirmationStatus === 'finalized' || !item.confirmationStatus);
     
     const statusColor = isError ? "#EF4444" : "#10B981";
     const statusIcon = isError ? "alert-circle" : "checkmark-circle";
@@ -34,25 +35,27 @@ const TransactionItem = memo(({ item }: { item: Transaction }) => {
 
     return (
       <TouchableOpacity 
-        style={styles.item} 
         onPress={openExplorer}
         activeOpacity={0.7}
         testID={`transaction-${item.signature}`}
+        style={{ marginBottom: 12 }}
       >
-        <View style={styles.row}>
-            <View style={[styles.iconContainer, { backgroundColor: statusBg }]}>
-                <Ionicons name={statusIcon} size={20} color={statusColor} />
-            </View>
-            <View style={styles.info}>
-                <Text style={styles.signature} numberOfLines={1} ellipsizeMode="middle">
-                    {item.signature}
-                </Text>
-                <Text style={styles.meta}>
-                    {date} • <Text style={{ color: statusColor, fontWeight: "600" }}>{item.confirmationStatus || "Success"}</Text>
-                </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
-        </View>
+        <GlassCard style={styles.glassItem} intensity={15}>
+          <View style={styles.row}>
+              <View style={[styles.iconContainer, { backgroundColor: statusBg }]}>
+                  <Ionicons name={statusIcon} size={20} color={statusColor} />
+              </View>
+              <View style={styles.info}>
+                  <Text style={styles.signature} numberOfLines={1} ellipsizeMode="middle">
+                      {item.signature}
+                  </Text>
+                  <Text style={styles.meta}>
+                      {date} • <Text style={{ color: statusColor, fontWeight: "600" }}>{item.confirmationStatus || "Success"}</Text>
+                  </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
+          </View>
+        </GlassCard>
       </TouchableOpacity>
     );
 });
@@ -60,8 +63,15 @@ const TransactionItem = memo(({ item }: { item: Transaction }) => {
 export const ActivityList = memo(({ transactions, loading }: ActivityListProps) => {
   if (loading) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.loadingText}>Loading recent activity...</Text>
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <SkeletonLoader width={150} height={24} style={{ marginBottom: 4 }} />
+        </View>
+        {[1, 2, 3].map((_, index) => (
+          <View key={index} style={{ marginBottom: 12 }}>
+             <SkeletonLoader height={80} borderRadius={24} />
+          </View>
+        ))}
       </View>
     );
   }
@@ -134,11 +144,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#3B82F6",
   },
-  loadingText: {
-    color: "#6B7280",
-    marginTop: 12,
-    fontSize: 15,
-  },
   emptyText: {
     color: "#374151",
     fontSize: 16,
@@ -153,24 +158,10 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 20,
   },
-  item: {
-    backgroundColor: "white",
-    marginBottom: 12,
-    borderRadius: 16,
+  glassItem: {
     padding: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-    borderWidth: 1,
-    borderColor: "rgba(229, 231, 235, 0.4)"
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.65)', // Fallback / Overwrite default
   },
   row: {
     flexDirection: "row",
@@ -200,8 +191,5 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     fontWeight: "500",
   },
-  date: {
-    fontSize: 12,
-    color: "#888",
-  },
 });
+

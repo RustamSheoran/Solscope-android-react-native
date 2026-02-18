@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useSolanaRpc } from "../../hooks/useSolanaRpc";
 import { ActivityList, Transaction } from "../../components/ActivityList";
+import { GlassCard } from "../../components/design-system/GlassCard";
+import { ClayButton } from "../../components/design-system/ClayButton";
 
 export default function HomeScreen() {
   const [address, setAddress] = useState("86xCnPeV69n6t3DnyGvkLobRo7cp9662zy8qT9GqG8gh");
@@ -80,18 +82,28 @@ export default function HomeScreen() {
                     </TouchableOpacity>
                 )}
             </View>
-            <TouchableOpacity 
-                style={[styles.goButton, (loading || isActivityLoading) && styles.goButtonDisabled]} 
-                onPress={fetchData} 
-                disabled={loading || isActivityLoading}
-                activeOpacity={0.8}
-            >
-                {loading || isActivityLoading ? (
-                    <ActivityIndicator size="small" color="white" />
-                ) : (
-                    <Ionicons name="arrow-forward" size={20} color="white" />
-                )}
-            </TouchableOpacity>
+            <View style={{ width: 52, height: 52 }}>
+                <ClayButton 
+                    title="" 
+                    onPress={fetchData} 
+                    disabled={loading || isActivityLoading}
+                    style={{ width: '100%', height: '100%', paddingVertical: 0, paddingHorizontal: 0, borderRadius: 14, backgroundColor: '#111827' }}
+                />
+                 {/* Overlay Icon since ClayButton only takes text title currently, or we can use ClayButton as container if we refactor it. 
+                     For now, placing icon on top via ClayButton children if it supported it, but it takes Title.
+                     I'll just put the icon inside ClayButton by refactoring ClayButton slightly or just putting a view over it?
+                     Actually ClayButton takes title. I'll pass simple arrow string or refactor ClayButton.
+                     Refactoring ClayButton to accept children is better but I'll stick to provided API for now or use a hack.
+                     Actually, I'll just change ClayButton to accept children in a separate step or just use "GO" text. 
+                     Let's use "GO" for now or an arrow symbol. arrow-forward is "→". */}
+                <View style={styles.iconOverlay} pointerEvents="none">
+                     {loading || isActivityLoading ? (
+                        <ActivityIndicator size="small" color="white" />
+                    ) : (
+                        <Ionicons name="arrow-forward" size={24} color="white" />
+                    )}
+                </View>
+            </View>
         </View>
 
         {error && (
@@ -102,7 +114,7 @@ export default function HomeScreen() {
         )}
 
         {balance !== null && (
-            <View style={styles.balanceCard}>
+            <GlassCard style={styles.balanceCard} intensity={25} colors={['rgba(255,255,255,0.9)', 'rgba(255,255,255,0.6)'] as any}>
                 <Text style={styles.balanceLabel}>Total Balance</Text>
                 <View style={styles.balanceRow}>
                     <Text style={styles.balanceValue}>{balance.toFixed(4)}</Text>
@@ -112,7 +124,7 @@ export default function HomeScreen() {
                     <Text style={styles.walletAddress} numberOfLines={1} ellipsizeMode="middle">{address}</Text>
                     <Ionicons name="copy-outline" size={14} color="#6B7280" style={{ marginLeft: 6 }} />
                 </View>
-            </View>
+            </GlassCard>
         )}
 
         <ActivityList transactions={transactions} loading={isActivityLoading} />
@@ -198,22 +210,10 @@ const styles = StyleSheet.create({
     color: "#1F2937",
     height: '100%',
   },
-  goButton: {
-    width: 52,
-    height: 52,
-    backgroundColor: "#111827",
-    borderRadius: 14,
+  iconOverlay: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  goButtonDisabled: {
-    opacity: 0.6,
-    backgroundColor: "#4B5563",
   },
   errorContainer: {
     flexDirection: 'row',
@@ -231,18 +231,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   balanceCard: {
-    backgroundColor: "white",
-    borderRadius: 24,
     padding: 24,
     marginBottom: 10,
     alignItems: 'center',
-    shadowColor: "#3B82F6",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
+    // GlassCard handles border and generic styles, we add layout specifics
   },
   balanceLabel: {
     fontSize: 14,
@@ -272,7 +264,7 @@ const styles = StyleSheet.create({
   walletInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#F3F4F6", // Can be semi-transparent if inside glass?
     paddingVertical: 6,
     paddingHorizontal: 16,
     borderRadius: 20,
