@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 
 type RpcParams = any[];
 
-interface RpcResponse<T> {
+export interface RpcResponse<T> {
   jsonrpc: '2.0';
   result?: T;
   error?: {

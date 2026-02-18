@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSolanaRpc } from "../../hooks/useSolanaRpc";
 
 export default function HomeScreen() {
@@ -16,56 +17,55 @@ export default function HomeScreen() {
     const result = await callRpc("getBalance", [address]);
     if (result !== null) {
       // result.value is usually the structure for getBalance: { context: {...}, value: <lamports> }
-      // Wait, standard JSON-RPC getBalance returns the integer directly as result?
-      // Checking docs: getBalance returns "integer - The balance of the account of provided Pubkey"
-      // Actually result is { context: { slot: ... }, value: <lamports> }
-      
-      // Let's verify the shape dynamically or assume standard response.
-      // safely handle if it wraps in value
       const lamports = result?.value !== undefined ? result.value : result;
       setBalance(lamports / 1000000000);
     } else {
         setBalance(null);
+        if (!error && !loading) {
+             Alert.alert("Error", "Failed to fetch balance");
+        }
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>SolScope Lite</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Solana Address"
-        value={address}
-        onChangeText={setAddress}
-        autoCapitalize="none"
-      />
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>SolScope Lite</Text>
+        
+        <TextInput
+            style={styles.input}
+            placeholder="Enter Solana Address"
+            value={address}
+            onChangeText={setAddress}
+            autoCapitalize="none"
+        />
 
-      <Button title="Check Balance" onPress={handleCheckBalance} disabled={loading} />
+        <Button title="Check Balance" onPress={handleCheckBalance} disabled={loading} />
 
-      {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />}
+        {loading && <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />}
 
-      {error && <Text style={styles.error}>{error}</Text>}
+        {error && <Text style={styles.error}>{error}</Text>}
 
-      {balance !== null && (
-        <View style={styles.result}>
-            <Text style={styles.balanceLabel}>Balance:</Text>
-            <Text style={styles.balance}>{balance.toFixed(4)} SOL</Text>
-        </View>
-      )}
-      
-      {/* Debug Data */}
-      {/* <Text style={{marginTop: 20, fontSize: 10}}>{JSON.stringify(data, null, 2)}</Text> */}
-    </View>
+        {balance !== null && (
+            <View style={styles.result}>
+                <Text style={styles.balanceLabel}>Balance:</Text>
+                <Text style={styles.balance}>{balance.toFixed(4)} SOL</Text>
+            </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 20,
     backgroundColor: "#F5F5F5",
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
   },
   title: {
     fontSize: 24,
