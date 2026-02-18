@@ -25,5 +25,5 @@ A generic "Thin Client" Solana wallet analyzer and swap interface, built with Re
 ## ✨ Features
 
 - **Phase 1: Foundation (Current)**
-  - 軽量 `useSolanaRpc` hook for JSON-RPC calls.
+  - Lightweight `useSolanaRpc` hook for JSON-RPC calls.
   - Home Screen: Check SOL Balance by address.
