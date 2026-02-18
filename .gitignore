@@ -1,2 +1,39 @@
-node_modules
+# MacOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+
+# Expo
+.expo/
+web-build/
+dist/
+
+# Android/iOS (if ejected or prebuild)
+android/
+ios/
+.idea/
+.gradle/
+build/
+local.properties
+*.iml
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# AI / Documentation (Local only)
 .ai/
+_temp_docs/
+
+# VSCode
+.vscode/
+
+# TypeScript
+*.tsbuildinfo
